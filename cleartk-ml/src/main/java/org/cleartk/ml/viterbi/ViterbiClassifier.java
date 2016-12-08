@@ -23,6 +23,7 @@
  */
 package org.cleartk.ml.viterbi;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -260,5 +261,11 @@ public class ViterbiClassifier<OUTCOME_TYPE> implements SequenceClassifier<OUTCO
     public int compareTo(Path that) {
       return Doubles.compare(this.score, that.score);
     }
+  }
+
+  public List<OUTCOME_TYPE> classify(Map<Integer, List<List<Feature>>> features, File featureFile)
+      throws CleartkProcessingException {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

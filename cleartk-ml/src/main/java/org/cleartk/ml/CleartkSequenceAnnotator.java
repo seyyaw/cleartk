@@ -23,9 +23,12 @@
  */
 package org.cleartk.ml;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -172,6 +175,20 @@ public abstract class CleartkSequenceAnnotator<OUTCOME_TYPE> extends JCasAnnotat
       instanceFeatures.add(instance.getFeatures());
     }
     return this.classifier.classify(instanceFeatures);
+  }
+
+  protected List<OUTCOME_TYPE> classify(
+      Map<Integer, List<Instance<OUTCOME_TYPE>>> instances,
+      File featureFile) throws CleartkProcessingException {
+    Map<Integer, List<List<Feature>>> instanceFeaturesMap = new LinkedHashMap<Integer, List<List<Feature>>>();
+    for (int i : instances.keySet()) {
+      List<List<Feature>> instanceFeatures = new ArrayList<List<Feature>>();
+      for (Instance<OUTCOME_TYPE> instance : instances.get(i)) {
+        instanceFeatures.add(instance.getFeatures());
+      }
+      instanceFeaturesMap.put(i, instanceFeatures);
+    }
+    return this.classifier.classify(instanceFeaturesMap, featureFile);
   }
 
 }

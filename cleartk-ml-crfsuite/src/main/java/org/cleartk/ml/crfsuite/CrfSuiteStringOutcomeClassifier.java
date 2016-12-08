@@ -1,23 +1,23 @@
-/** 
+/**
  * Copyright 2011-2012
  * Ubiquitous Knowledge Processing (UKP) Lab
  * Technische Universität Darmstadt
  * All rights reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
- * For a complete copy of the license please see the file LICENSE distributed 
- * with the cleartk-syntax-berkeley project or visit 
+ *
+ * For a complete copy of the license please see the file LICENSE distributed
+ * with the cleartk-syntax-berkeley project or visit
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,13 +28,14 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE. 
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 package org.cleartk.ml.crfsuite;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.cleartk.ml.CleartkProcessingException;
 import org.cleartk.ml.Feature;
@@ -44,12 +45,12 @@ import org.cleartk.ml.encoder.outcome.OutcomeEncoder;
 import org.cleartk.ml.jar.SequenceClassifier_ImplBase;
 
 /**
- * 
- * 
+ *
+ *
  * <br>
  * Copyright (c) 2011-2012, Technische Universität Darmstadt <br>
  * All rights reserved.
- * 
+ *
  * @author Martin Riedl
  */
 public class CrfSuiteStringOutcomeClassifier extends
@@ -68,6 +69,21 @@ public class CrfSuiteStringOutcomeClassifier extends
     this.wrapper = new CrfSuiteWrapper();
   }
 
+  @Override
+  public List<String> classify(Map<Integer, List<List<Feature>>> features,File featureFile )
+      throws CleartkProcessingException {
+    List<String> posTags = null;
+
+    try {
+
+      posTags = wrapper.classifyFeatures(features, outcomeEncoder, featuresEncoder, modelFile, featureFile);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return posTags;
+  }
+
+  @Override
   public List<String> classify(List<List<Feature>> features) throws CleartkProcessingException {
     List<String> posTags = null;
 

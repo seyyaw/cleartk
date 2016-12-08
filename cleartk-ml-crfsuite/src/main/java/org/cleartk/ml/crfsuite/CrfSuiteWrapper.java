@@ -1,23 +1,23 @@
-/** 
+/**
  * Copyright 2011-2012
  * Ubiquitous Knowledge Processing (UKP) Lab
  * Technische Universität Darmstadt
  * All rights reserved.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
- * For a complete copy of the license please see the file LICENSE distributed 
- * with the cleartk-syntax-berkeley project or visit 
+ *
+ * For a complete copy of the license please see the file LICENSE distributed
+ * with the cleartk-syntax-berkeley project or visit
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,7 +28,7 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE. 
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 package org.cleartk.ml.crfsuite;
@@ -46,6 +46,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.util.Level;
@@ -64,8 +65,8 @@ import de.tudarmstadt.ukp.dkpro.core.api.resources.ResourceUtils;
  * <br>
  * Copyright (c) 2011-2012, Technische Universität Darmstadt <br>
  * All rights reserved.
- * 
- * 
+ *
+ *
  * @author Martin Riedl
  */
 
@@ -261,6 +262,46 @@ public class CrfSuiteWrapper {
 
       out.close();
       return classifyFeatures(featureFile, modelFile, features.size());
+    } catch (CleartkEncoderException e) {
+      logger.log(Level.WARNING, e.getMessage());
+    }
+    return null;
+
+  }
+
+  public List<String> classifyFeatures(
+      Map<Integer, List<List<Feature>>> features,
+      OutcomeEncoder<String, String> outcomeEncoder,
+      FeaturesEncoder<List<NameNumber>> featuresEncoder,
+      File modelFile,
+      File featureFile) throws IOException {
+
+    int featureSizes = features.size() - 1; // number of new lines separating new sentences
+    if (featureFile == null) {
+      featureFile = File.createTempFile("features", ".crfsuite");
+    } else if (!featureFile.exists()) {
+      featureFile.createNewFile();
+    }
+    featureFile.deleteOnExit();
+    logger.log(Level.FINE, "Write features to classify to " + featureFile.getAbsolutePath());
+    try {
+      BufferedWriter out = new BufferedWriter(new FileWriter(featureFile));
+      for (int i : features.keySet()) {
+        featureSizes = featureSizes + features.get(i).size();
+        for (List<Feature> f : features.get(i)) {
+          List<NameNumber> fe;
+          fe = featuresEncoder.encodeAll(f);
+          for (NameNumber nn : fe) {
+            out.append(nn.name);
+            out.append("\t");
+          }
+          out.append("\n");
+        }
+        out.append("\n");
+      }
+
+      out.close();
+      return classifyFeatures(featureFile, modelFile, featureSizes);
     } catch (CleartkEncoderException e) {
       logger.log(Level.WARNING, e.getMessage());
     }

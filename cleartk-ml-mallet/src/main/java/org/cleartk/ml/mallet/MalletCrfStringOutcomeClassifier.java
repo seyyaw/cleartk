@@ -23,8 +23,10 @@
  */
 package org.cleartk.ml.mallet;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.cleartk.ml.CleartkProcessingException;
 import org.cleartk.ml.Feature;
@@ -122,5 +124,11 @@ public class MalletCrfStringOutcomeClassifier extends
     }
 
     return encodedFeaturesArray;
+  }
+
+  public List<String> classify(Map<Integer, List<List<Feature>>> features, File featureFile)
+      throws CleartkProcessingException {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

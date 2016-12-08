@@ -23,6 +23,7 @@
  */
 package org.cleartk.ml;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,16 @@ public interface SequenceClassifier<OUTCOME_TYPE> {
    * @return a list of the classifications made.
    */
   public List<OUTCOME_TYPE> classify(List<List<Feature>> features)
+      throws CleartkProcessingException;
+
+  /**
+   * Classifies a sequence of feature lists for multiple sentences (instances)
+   * 
+   * @param features
+   *          a list of features for each member in the sequence
+   * @return a list of the classifications made.
+   */
+  public List<OUTCOME_TYPE> classify(Map<Integer, List<List<Feature>>> features, File featureFile)
       throws CleartkProcessingException;
 
   /**
